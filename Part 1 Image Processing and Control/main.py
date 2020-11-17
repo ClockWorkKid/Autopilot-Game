@@ -2,9 +2,36 @@ import cv2 as cv
 import os
 from time import time
 from windowcapture import WindowCapture
+from pynput.keyboard import Key, Listener
+import threading
+
+
+def streamKeys():
+
+    def on_press(key):
+        print('{0} pressed'.format(
+            key))
+
+    def on_release(key):
+        print('{0} release'.format(
+            key))
+        if key == Key.esc:
+            # Stop listener
+            return False
+a
+    print("Starting key detection")
+
+    # Collect events until released
+    with Listener(
+            on_press=on_press,
+            on_release=on_release) as listener:
+        listener.join()
 
 
 def streamScreen(window_name):
+
+    print("Starting streaming game window")
+
     # initialize the WindowCapture class
     wincap = WindowCapture(window_name)
 
@@ -19,9 +46,9 @@ def streamScreen(window_name):
         frames = frames + 1
 
         # debug the loop rate
-        if frames == 50:
+        if frames == 200:
 
-            print('FPS {}'.format(int(50 / (time() - loop_time))))
+            print('FPS {}'.format(int(200 / (time() - loop_time))))
             loop_time = time()
             frames = 0
 
@@ -34,7 +61,6 @@ def streamScreen(window_name):
     print('Done.')
 
 
-
 if __name__ == "__main__":
 
     # Change the working directory to the folder this script is in.
@@ -44,6 +70,10 @@ if __name__ == "__main__":
     # list all windows
     # WindowCapture.list_window_names()
 
-    # stream the window
-    streamScreen('Need for Speed™ Most Wanted')
+    # streamScreen('Need for Speed™ Most Wanted')
 
+    thread_game = threading.Thread(target=streamScreen, args=('Need for Speed™ Most Wanted',))
+    thread_keys = threading.Thread(target=streamKeys, args=())
+
+    thread_game.start()
+    thread_keys.start()
